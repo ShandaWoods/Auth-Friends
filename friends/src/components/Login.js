@@ -27,8 +27,8 @@ class Login extends React.Component {
     this.setState({
       isFetching: true
     });
-    axiosWithAuth()
-      .post('/api/login', { username: 'Lambda School', password: 'i<3Lambd4' })
+return    axiosWithAuth()
+      .post('/login', { username: 'Lambda School', password: 'i<3Lambd4' })
       .then(res => {
           console.log('res.data is: ', res.data)
         localStorage.setItem('token', res.data.payload);

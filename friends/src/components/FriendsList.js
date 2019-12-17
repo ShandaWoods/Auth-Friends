@@ -9,6 +9,7 @@ state = {
     name: '',
     age: '',
     email: '',
+    isPosting: false,
   };
 
   componentDidMount() {
@@ -17,45 +18,86 @@ state = {
 
   getData = () => {
     axiosWithAuth()
-      .get('/api/friends')
+      .get('/friends')
       .then(res => {
-        console.log(res)
-
+        console.log('!!!', res)
+        this.setState({
+            friends: res.data
+        })
       })
       .catch(err => console.log(err));
+  };
+
+  postNewFriend = () => {
+      const postObj = {
+        name: this.state.name,
+        age: this.state.age,
+        email: this.state.email,
+      }
+    this.setState({
+        isPosting: true
+      });
+    return  axiosWithAuth()
+    .post('/friends', postObj)
+    .then(res => {
+        console.log('post friend response is: ', res)
+        this.setState({
+            friends: [...this.state.friends, postObj]
+        })
+    })
+  }
+
+  handleChange = e => {
+    this.setState( {
+        [e.target.name]: e.target.value
+      });
   };
 
   render() {
    
     return (
+       <div>
+        {
+this.state.friends.map( friendObject => {
+    return (
+        <div style={{'border': '2px black solid', 'width':'30%', 'margin': '0 auto'}}>
+            <h1>{friendObject.name}</h1>
+            <h2>{friendObject.age}</h2>
+            <h2>{friendObject.email}</h2>
+        </div>
+    )
+})
+        }
+
         <div>
        
-        { this.state.isFetching && <Loader type="Puff" color="#00BFFF" height={100} width={100} /> }
-            <form onSubmit={this.login}>
-              <input
-                type="text"
-                name="name"
-                value={this.state.credentials.name}
-                onChange={this.handleChange}
-              />
-              <input
-                type="text"
-                name="email"
-                value={this.state.credentials.email}
-                onChange={this.handleChange}
-              />
-              <input
-                type="text"
-                name="age"
-                value={this.state.credentials.age}
-                onChange={this.handleChange}
-              />
-              <button>Log in</button>
-              {this.state.isFetching && 'logging in'}
-            </form>
-          
-        </div>
-      
+{ this.state.isPosting && <Loader type="Puff" color="#00BFFF" height={100} width={100} /> }
+    <form onSubmit={this.postNewFriend}>
+      <input
+        type="text"
+        name="name"
+        value={this.state.name}
+        onChange={this.handleChange}
+      />
+      <input
+        type="text"
+        name="email"
+        value={this.state.email}
+        onChange={this.handleChange}
+      />
+      <input
+        type="text"
+        name="age"
+        value={this.state.age}
+        onChange={this.handleChange}
+      />
+      <button>Add Friend</button>
+      {this.state.isFetching && 'adding new friend'}
+    </form>
+  
+</div>
+
+       </div>
     );
   }
 }
